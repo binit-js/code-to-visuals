@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production build
+dist/
+build/
+
+# Environment & Secrets (NEVER COMMIT)
+.env
+.env.local
+.env.*.local
+*.local
+
+# User Feedback Data (Personal info & emails)
+backend/data/*.jsonl
+DSA/backend/data/*.jsonl
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+bun.lockb*
+
+# Editor & OS files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
