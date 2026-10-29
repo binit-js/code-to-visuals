@@ -14,6 +14,21 @@ class SandboxExecutor:
     def execute(self, code: str, max_steps: int = 1000, timeout: Optional[float] = None) -> ExecutionResult:
         actual_timeout = timeout or self.default_timeout
 
+        # In Vercel or serverless environments, execute directly in-process for speed and reliability
+        if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+            from .worker import run_code_worker
+            res_dict = run_code_worker(code, max_steps=max_steps)
+            steps = [TraceStep(**s) for s in res_dict.get("steps", [])]
+            return ExecutionResult(
+                success=res_dict.get("success", False),
+                total_steps=res_dict.get("total_steps", 0),
+                steps=steps,
+                stdout=res_dict.get("stdout", ""),
+                error=res_dict.get("error"),
+                truncated=res_dict.get("truncated", False),
+                execution_time_ms=res_dict.get("execution_time_ms", 0.0),
+            )
+
         # Locate worker script or run via python -m app.executor.worker
         backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -81,6 +96,23 @@ class SandboxExecutor:
                     proc.wait()
                 except Exception:
                     pass
+            # Fallback to in-process execution if subprocess fails on host
+            try:
+                from .worker import run_code_worker
+                res_dict = run_code_worker(code, max_steps=max_steps)
+                steps = [TraceStep(**s) for s in res_dict.get("steps", [])]
+                return ExecutionResult(
+                    success=res_dict.get("success", False),
+                    total_steps=res_dict.get("total_steps", 0),
+                    steps=steps,
+                    stdout=res_dict.get("stdout", ""),
+                    error=res_dict.get("error"),
+                    truncated=res_dict.get("truncated", False),
+                    execution_time_ms=res_dict.get("execution_time_ms", 0.0),
+                )
+            except Exception:
+                pass
+
             return ExecutionResult(
                 success=False,
                 total_steps=0,

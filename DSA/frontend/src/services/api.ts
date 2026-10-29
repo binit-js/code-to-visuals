@@ -1,6 +1,6 @@
 import type { ExecutionResult, StaticAnalysisResult } from '../types/trace';
 
-const API_BASE = ''; // Uses relative /api proxied by Vite, or fallback to absolute if direct
+const API_BASE = import.meta.env.VITE_API_URL || ''; // Uses relative /api on Vercel or local proxy, or external VITE_API_URL if configured
 
 export async function executeCode(
   code: string,
