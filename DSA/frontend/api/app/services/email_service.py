@@ -16,8 +16,17 @@ from ..models.feedback import FeedbackRequest
 load_dotenv(Path(__file__).resolve().parent.parent.parent / '.env')
 load_dotenv()
 
-DATA_DIR = Path(__file__).resolve().parent.parent.parent / 'data'
-DATA_DIR.mkdir(parents=True, exist_ok=True)
+# Safe serverless directory handling (Vercel/AWS Lambda only permits writes to /tmp)
+if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+    DATA_DIR = Path("/tmp/data")
+else:
+    DATA_DIR = Path(__file__).resolve().parent.parent.parent / 'data'
+
+try:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+except Exception:
+    pass
+
 FEEDBACK_FILE = DATA_DIR / 'feedbacks.jsonl'
 
 DEFAULT_ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'b33022659@gmail.com')
@@ -37,8 +46,11 @@ def save_feedback_locally(feedback: FeedbackRequest, feedback_id: str) -> None:
         'current_code': feedback.current_code,
         'step_info': feedback.step_info,
     }
-    with open(FEEDBACK_FILE, 'a', encoding='utf-8') as f:
-        f.write(json.dumps(record, ensure_ascii=False) + '\n')
+    try:
+        with open(FEEDBACK_FILE, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(record, ensure_ascii=False) + '\n')
+    except Exception as e:
+        print(f"Warning: could not write feedback locally: {e}")
 
 
 def generate_mailto_url(feedback: FeedbackRequest, recipient_email: str) -> str:

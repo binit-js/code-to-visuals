@@ -29,17 +29,26 @@ class PreviewRequest(BaseModel):
     code: str
 
 
+@app.get("/")
+@app.get("/api")
+def root_check():
+    return {"status": "ok", "service": "CodeFlow Execution Engine", "version": "1.0.0"}
+
+
 @app.get("/api/health")
+@app.get("/health")
 def health_check():
     return {"status": "ok", "service": "CodeFlow Execution Engine", "version": "1.0.0"}
 
 
 @app.post("/api/preview", response_model=StaticAnalysisResult)
+@app.post("/preview", response_model=StaticAnalysisResult)
 def preview_code(req: PreviewRequest):
     return analyze_source_ast(req.code)
 
 
 @app.post("/api/execute", response_model=ExecutionResult)
+@app.post("/execute", response_model=ExecutionResult)
 def execute_code(req: ExecutionRequest):
     return executor.execute(
         code=req.code,
@@ -49,6 +58,7 @@ def execute_code(req: ExecutionRequest):
 
 
 @app.post("/api/feedback", response_model=FeedbackResponse)
+@app.post("/feedback", response_model=FeedbackResponse)
 def submit_feedback(req: FeedbackRequest):
     res = process_feedback(req)
     return FeedbackResponse(**res)
