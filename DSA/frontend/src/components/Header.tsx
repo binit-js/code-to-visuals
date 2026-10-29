@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, RotateCcw, RotateCw, ShieldCheck, Code2, Video, Bug } from 'lucide-react';
+import { Code2 } from 'lucide-react';
 import { CODE_SNIPPETS, type CodeSnippet } from '../examples/codeSnippets';
 
 interface HeaderProps {
@@ -32,12 +32,12 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="header-left">
         <div className="logo-group">
           <div className="logo-icon">
-            <Code2 size={20} className="text-emerald-400" />
+            <Code2 size={20} className="text-[#0eb37c]" />
           </div>
           <div>
-            <div className="logo-title">
+            <div className="logo-title font-heading">
               <span>Code</span>
-              <span className="logo-highlight">Flow</span>
+              <span className="text-[#0eb37c]">Flow</span>
             </div>
             <span className="logo-subtitle">Runtime Tracing & DSA Visualizer</span>
           </div>
@@ -72,17 +72,15 @@ export const Header: React.FC<HeaderProps> = ({
 
       <div className="header-right">
         <div className="security-tag" title="Subprocess sandboxing with timeout, memory limit, and restricted builtins">
-          <ShieldCheck size={14} className="text-emerald-400" />
           <span>Isolated Sandbox</span>
         </div>
 
         {onOpenDemo && (
           <button
             onClick={onOpenDemo}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900/90 border border-zinc-700/80 hover:border-emerald-500/50 hover:bg-emerald-950/30 text-zinc-300 hover:text-emerald-300 transition-all text-xs font-semibold shadow-sm cursor-pointer group"
+            className="px-3 py-1.5 rounded-lg bg-[#111513] border border-[#222b26] hover:border-[#2f3d35] hover:bg-[#171d19] text-[#c5d2cb] hover:text-white transition-colors text-xs font-medium cursor-pointer"
             title="Watch interactive demo & user guide"
           >
-            <Video size={14} className="text-emerald-400 group-hover:scale-110 transition-transform" />
             <span>How to Use</span>
           </button>
         )}
@@ -90,10 +88,9 @@ export const Header: React.FC<HeaderProps> = ({
         {onOpenFeedback && (
           <button
             onClick={onOpenFeedback}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900/90 border border-neutral-700/80 hover:border-amber-400/50 hover:bg-amber-950/20 text-neutral-200 hover:text-amber-200 transition-all text-xs font-semibold shadow-sm cursor-pointer group"
+            className="px-3 py-1.5 rounded-lg bg-[#111513] border border-[#222b26] hover:border-[#2f3d35] hover:bg-[#171d19] text-[#c5d2cb] hover:text-white transition-colors text-xs font-medium cursor-pointer"
             title="Report a Bug or Request a Feature (b33022659@gmail.com)"
           >
-            <Bug size={14} className="text-amber-400 group-hover:scale-110 transition-transform" />
             <span>Feedback & Bugs</span>
           </button>
         )}
@@ -101,23 +98,21 @@ export const Header: React.FC<HeaderProps> = ({
         {onOpenAbout && (
           <button
             onClick={onOpenAbout}
-            className="group relative flex items-center gap-2 p-1 pr-3 rounded-full bg-zinc-900/90 border border-emerald-500/40 hover:border-emerald-400 hover:bg-emerald-950/30 transition-all duration-300 shadow-sm hover:shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer"
+            className="group flex items-center gap-2 p-1 pr-3 rounded-full bg-[#111513] border border-[#222b26] hover:border-[#0eb37c]/60 hover:bg-[#171d19] transition-colors cursor-pointer"
             title="About Binit — Creator & Lead Architect"
           >
-            {/* Attractive Circular DP Photo */}
-            <div className="relative size-8 rounded-full overflow-hidden border-2 border-emerald-400 shrink-0">
+            <div className="relative size-7 rounded-full overflow-hidden border border-[#0eb37c]/60 shrink-0">
               <img
                 src="/binit-dp.jpg?v=2"
                 alt="Binit"
-                className="size-full object-cover group-hover:scale-110 transition-transform duration-300"
+                className="size-full object-cover"
               />
-              <span className="absolute bottom-0 right-0 size-2 bg-emerald-500 rounded-full border border-zinc-900"></span>
             </div>
             <div className="flex flex-col text-left">
-              <span className="text-[11px] font-bold text-white group-hover:text-emerald-300 transition-colors leading-tight">
+              <span className="text-[11px] font-semibold text-white leading-tight">
                 Binit
               </span>
-              <span className="text-[9px] font-mono text-emerald-400/80 leading-tight">
+              <span className="text-[9px] font-mono text-[#0eb37c] leading-tight">
                 Creator
               </span>
             </div>
@@ -130,7 +125,6 @@ export const Header: React.FC<HeaderProps> = ({
           title="Reset code and execution trace"
           disabled={isRunning}
         >
-          <RotateCcw size={15} />
           <span>Reset</span>
         </button>
 
@@ -141,7 +135,6 @@ export const Header: React.FC<HeaderProps> = ({
             title="Replay from step 0"
             disabled={isRunning}
           >
-            <RotateCw size={15} />
             <span>Replay</span>
           </button>
         )}
@@ -151,7 +144,6 @@ export const Header: React.FC<HeaderProps> = ({
           disabled={isRunning}
           className={`btn btn-primary ${isRunning ? 'btn-loading' : ''}`}
         >
-          <Play size={16} fill="currentColor" />
           <span>{isRunning ? 'Executing...' : 'Run Code'}</span>
         </button>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   X,
@@ -12,7 +12,6 @@ import {
   ExternalLink,
   Code2,
   ArrowRight,
-  Sparkles,
 } from 'lucide-react';
 import { submitFeedback, type FeedbackPayload } from '../../services/api';
 
@@ -65,28 +64,7 @@ const CATEGORIES: CategoryOption[] = [
     icon: MessageSquare,
     badge: 'Feedback',
     placeholderTitle: 'e.g. Great experience, here are a few ideas to make it faster',
-    placeholderDesc: 'Share your thoughts, suggestions, or paired programming experience with Binit...',
-  },
-];
-
-const TESTIMONIALS = [
-  {
-    quote: "Every bug report and feature request goes straight to my personal inbox. I review and push updates to CodeFlow within 24 hours.",
-    name: "Binit",
-    role: "Creator & Lead Architect, CodeFlow",
-    avatar: "/binit-dp.jpg?v=2",
-  },
-  {
-    quote: "CodeFlow completely transformed how I learn algorithms. Seeing memory pointers move in real-time made linked lists and trees click instantly.",
-    name: "Manu Arora",
-    role: "Founder, Aceternity UI",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
-  },
-  {
-    quote: "The dynamic visualization and zero-jargon step explanations helped our students master difficult recursion patterns effortlessly.",
-    name: "Emily Rodriguez",
-    role: "Customer Success Lead, GrowthCo",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    placeholderDesc: 'Share your thoughts, suggestions, or feedback directly with Binit...',
   },
 ];
 
@@ -96,7 +74,6 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
   currentCode,
   stepInfo,
 }) => {
-  const [activeTestimonial, setActiveTestimonial] = useState<number>(0);
   const [selectedCategory, setSelectedCategory] = useState<FeedbackCategory>('bug');
   const [fullName, setFullName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -113,19 +90,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
     mailtoUrl: string;
   } | null>(null);
 
-  // Auto-rotate testimonial carousel every 6s
-  useEffect(() => {
-    if (!isOpen) return;
-    const interval = setInterval(() => {
-      setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
   const currentCat = CATEGORIES.find((c) => c.id === selectedCategory) || CATEGORIES[0];
-  const currentT = TESTIMONIALS[activeTestimonial];
 
   // Construct structured email body for direct Gmail / mail client compose
   const buildEmailBody = () => {
@@ -167,7 +134,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !message.trim()) {
-      setErrorMsg('Please fill in both a title and description.');
+      setErrorMsg('Please enter both a title and description.');
       return;
     }
 
@@ -178,24 +145,22 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
     const mailtoUrl = getDirectMailtoUrl();
     setLastSubmissionUrls({ gmailUrl, mailtoUrl });
 
-    const payload: FeedbackPayload = {
-      category: selectedCategory === 'bug' ? 'bug' : selectedCategory === 'feature' ? 'feature' : 'general',
-      name: fullName.trim() || 'Anonymous User',
-      email: email.trim() || undefined,
-      subject: `[${currentCat.badge}] ${title.trim()}`,
-      message: message.trim(),
-      rating: 5,
-      current_code: attachCode ? currentCode : undefined,
-      step_info: attachCode ? stepInfo : undefined,
-    };
-
     let isDelivered = false;
     let needsActivation = false;
 
-    // 1. Persist locally to backend
+    // 1. Record via backend API if reachable
     try {
-      const res = await submitFeedback(payload);
-      if (res.method === 'smtp' || res.method === 'web3forms') {
+      const payload: FeedbackPayload = {
+        name: fullName.trim() || 'Anonymous User',
+        email: email.trim() || 'noreply@codeflow.dev',
+        category: (selectedCategory === 'algorithm' ? 'feature' : selectedCategory) as 'bug' | 'feature' | 'general',
+        subject: title.trim(),
+        message: message.trim(),
+        step_info: stepInfo,
+        current_code: attachCode ? currentCode : undefined,
+      };
+      const apiRes = await submitFeedback(payload);
+      if (apiRes.success) {
         isDelivered = true;
       }
     } catch (err: any) {
@@ -271,12 +236,12 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
           exit={{ opacity: 0, scale: 0.96, y: 12 }}
           transition={{ duration: 0.18, ease: 'easeOut' }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-5xl my-auto rounded-2xl bg-[#0f1118] border border-[#232736] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.85)] overflow-hidden text-white"
+          className="relative w-full max-w-5xl my-auto rounded-2xl bg-[#0a0d0b] border border-[#222b26] shadow-2xl overflow-hidden text-white"
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 sm:top-5 sm:right-5 z-30 p-2 rounded-lg bg-[#151824] hover:bg-[#1e2233] text-[#a1a1aa] hover:text-white transition-colors duration-150 border border-[#272b3b] shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="absolute top-4 right-4 sm:top-5 sm:right-5 z-30 p-2 rounded-lg bg-[#111513] hover:bg-[#171d19] text-[#95a49c] hover:text-white transition-colors border border-[#222b26] shadow-sm cursor-pointer"
             title="Close modal"
             aria-label="Close"
           >
@@ -285,94 +250,60 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
 
           {/* 2-Column Desktop Grid Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch">
-            {/* LEFT SIDE: Creator Guarantee & Testimonial Showcase */}
-            <div className="lg:col-span-5 relative p-6 sm:p-8 flex flex-col justify-between bg-gradient-to-br from-[#1a080d] via-[#120508] to-[#090204] border-b lg:border-b-0 lg:border-r border-[#232736] overflow-hidden select-none">
-              {/* Subtle background glow accents */}
-              <div className="absolute -top-16 -right-16 w-64 h-64 bg-pink-600/15 rounded-full blur-2xl pointer-events-none" />
-              <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-rose-600/10 rounded-full blur-2xl pointer-events-none" />
-
+            {/* LEFT SIDE: Creator Guarantee & Direct Inbox Details */}
+            <div className="lg:col-span-5 relative p-6 sm:p-8 flex flex-col justify-between bg-[#0a0d0b] border-b lg:border-b-0 lg:border-r border-[#222b26] select-none">
               {/* Creator Promise Tag */}
-              <div className="relative z-10 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/10 w-fit text-xs font-medium text-rose-200">
-                <Sparkles size={13} className="text-amber-400 shrink-0" />
+              <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-[#111513] border border-[#222b26] w-fit text-xs font-mono text-[#0eb37c]">
                 <span>Inbox: b33022659@gmail.com</span>
               </div>
 
-              {/* Centered Glassmorphic Testimonial Card */}
-              <motion.div
-                key={activeTestimonial}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="relative z-10 rounded-xl bg-white/[0.04] backdrop-blur-md border border-white/10 p-5 sm:p-6 my-auto space-y-4"
-              >
-                {/* Double quote icon */}
-                <svg
-                  className="w-7 h-7 text-white/40"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                </svg>
-
-                {/* Testimonial Quote */}
-                <p className="text-[15px] font-normal text-white/90 leading-[1.65]">
-                  &ldquo;{currentT.quote}&rdquo;
+              {/* Creator Statement Card */}
+              <div className="rounded-xl bg-[#111513] border border-[#222b26] p-5 sm:p-6 my-auto space-y-4">
+                <p className="text-[14px] font-normal text-[#c5d2cb] leading-relaxed">
+                  &ldquo;Every bug report and feature request goes straight to my personal inbox. I review and push updates to CodeFlow within 24 hours.&rdquo;
                 </p>
 
                 {/* Author Info */}
-                <div className="flex items-center gap-3 pt-1">
+                <div className="flex items-center gap-3 pt-2 border-t border-[#222b26]">
                   <img
-                    src={currentT.avatar}
-                    alt={currentT.name}
-                    className="size-10 rounded-full object-cover border border-white/20 shadow-sm shrink-0"
+                    src="/binit-dp.jpg?v=2"
+                    alt="Binit"
+                    className="size-10 rounded-full object-cover border border-[#0eb37c] shrink-0"
                   />
                   <div>
-                    <h4 className="text-[14px] font-semibold text-white leading-tight">
-                      {currentT.name}
+                    <h4 className="text-[14px] font-semibold text-white leading-tight font-heading">
+                      Binit
                     </h4>
-                    <p className="text-[12px] font-normal text-white/60 leading-tight mt-0.5">
-                      {currentT.role}
+                    <p className="text-[12px] font-normal text-[#95a49c] leading-tight mt-0.5">
+                      Creator & Lead Architect, CodeFlow
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              {/* Bottom Carousel Pagination Dots */}
-              <div className="relative z-10 flex items-center justify-center gap-2 pt-4">
-                {TESTIMONIALS.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setActiveTestimonial(idx)}
-                    className={`transition-all duration-200 rounded-full cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white ${
-                      activeTestimonial === idx
-                        ? 'w-6 h-2 bg-white'
-                        : 'size-2 bg-white/30 hover:bg-white/60'
-                    }`}
-                    title={`Slide ${idx + 1}`}
-                    aria-label={`Go to slide ${idx + 1}`}
-                  />
-                ))}
+              {/* Response Time Info */}
+              <div className="pt-4 border-t border-[#222b26] text-xs font-mono text-[#728279] flex items-center justify-between">
+                <span>Personal SLA: &lt; 24h</span>
+                <span>Active Release: v2.0</span>
               </div>
             </div>
 
             {/* RIGHT SIDE: Feedback, Bug Report & Feature Request Form */}
-            <div className="lg:col-span-7 p-6 sm:p-8 md:p-9 flex flex-col justify-center bg-[#0f1118]">
+            <div className="lg:col-span-7 p-6 sm:p-8 md:p-9 flex flex-col justify-center bg-[#0e120f]">
               {isSuccess ? (
                 <div className="text-center py-6 sm:py-8 space-y-4">
                   {deliveryStatus === 'delivered' ? (
                     <>
                       <div className="flex justify-center">
-                        <div className="size-14 rounded-full bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-sm">
-                          <CheckCircle2 size={30} />
+                        <div className="size-14 rounded-full bg-[#111513] border border-[#0eb37c] flex items-center justify-center text-[#0eb37c] shadow-sm">
+                          <CheckCircle2 size={28} />
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-2xl font-bold text-white tracking-tight">
+                        <h3 className="text-2xl font-bold text-white tracking-tight font-heading">
                           Email Sent Successfully!
                         </h3>
-                        <p className="text-sm text-[#a1a1aa] mt-1.5 leading-relaxed max-w-sm mx-auto">
+                        <p className="text-sm text-[#95a49c] mt-1.5 leading-relaxed max-w-sm mx-auto">
                           Your message was delivered directly to <strong className="text-white">b33022659@gmail.com</strong>.
                         </p>
                       </div>
@@ -380,42 +311,41 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                   ) : deliveryStatus === 'activation_needed' ? (
                     <>
                       <div className="flex justify-center">
-                        <div className="size-14 rounded-full bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-sm">
-                          <AlertCircle size={30} />
+                        <div className="size-14 rounded-full bg-[#111513] border border-[#e69500] flex items-center justify-center text-[#e69500] shadow-sm">
+                          <AlertCircle size={28} />
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-heading">
                           One-Time Activation Required
                         </h3>
-                        <p className="text-xs sm:text-sm text-[#a1a1aa] mt-1.5 leading-relaxed max-w-md mx-auto">
-                          FormSubmit has sent an <strong className="text-amber-300">"Activate Form"</strong> confirmation link to <strong className="text-white">b33022659@gmail.com</strong>.
+                        <p className="text-xs sm:text-sm text-[#95a49c] mt-1.5 leading-relaxed max-w-md mx-auto">
+                          FormSubmit has sent an <strong className="text-[#e69500]">&quot;Activate Form&quot;</strong> confirmation link to <strong className="text-white">b33022659@gmail.com</strong>.
                         </p>
                       </div>
 
-                      {/* Immediate Delivery Action */}
-                      <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 text-left space-y-2.5 max-w-md mx-auto">
-                        <div className="flex items-center gap-1.5 text-amber-300 font-semibold text-xs">
+                      <div className="p-4 rounded-xl bg-[#111513] border border-[#222b26] text-left space-y-2.5 max-w-md mx-auto">
+                        <div className="flex items-center gap-1.5 text-[#e69500] font-semibold text-xs">
                           <Mail size={14} />
-                          <span>How to get messages in your mail:</span>
+                          <span>Delivery instructions:</span>
                         </div>
-                        <ol className="text-xs text-[#d4d4d8] list-decimal list-inside space-y-1 leading-relaxed">
-                          <li>Open your Gmail (<strong className="text-white">b33022659@gmail.com</strong>)</li>
-                          <li>Click <strong className="text-amber-300">"Activate Form"</strong> in the email from FormSubmit</li>
-                          <li>From then on, all website feedback arrives automatically!</li>
+                        <ol className="text-xs text-[#c5d2cb] list-decimal list-inside space-y-1 leading-relaxed">
+                          <li>Open Gmail (<strong className="text-white">b33022659@gmail.com</strong>)</li>
+                          <li>Click <strong className="text-[#e69500]">&quot;Activate Form&quot;</strong> from FormSubmit</li>
+                          <li>Future website submissions will arrive automatically</li>
                         </ol>
-                        <p className="text-[11px] text-[#a1a1aa] pt-1 border-t border-amber-500/20">
-                          To send this message right now without waiting, click below:
+                        <p className="text-[11px] text-[#95a49c] pt-1 border-t border-[#222b26]">
+                          To deliver this message right now, open in Gmail:
                         </p>
                         {lastSubmissionUrls?.gmailUrl && (
                           <a
                             href={lastSubmissionUrls.gmailUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="w-full h-10 px-4 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors duration-150"
+                            className="w-full h-10 px-4 rounded-lg bg-[#0eb37c] hover:bg-[#12c286] text-black font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
                           >
                             <Mail size={14} />
-                            <span>Send This Message via Gmail Web (1-Click)</span>
+                            <span>Send via Gmail Web</span>
                             <ExternalLink size={12} />
                           </a>
                         )}
@@ -424,26 +354,26 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                   ) : (
                     <>
                       <div className="flex justify-center">
-                        <div className="size-14 rounded-full bg-blue-500/15 border border-blue-500/40 flex items-center justify-center text-blue-400 shadow-sm">
-                          <Mail size={30} />
+                        <div className="size-14 rounded-full bg-[#111513] border border-[#0eb37c] flex items-center justify-center text-[#0eb37c] shadow-sm">
+                          <Mail size={28} />
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                          Message Saved & Ready to Send
+                        <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-heading">
+                          Message Ready to Send
                         </h3>
-                        <p className="text-sm text-[#a1a1aa] mt-1.5 leading-relaxed max-w-sm mx-auto">
-                          Saved locally. Click below to deliver immediately to <strong className="text-white">b33022659@gmail.com</strong>:
+                        <p className="text-sm text-[#95a49c] mt-1.5 leading-relaxed max-w-sm mx-auto">
+                          Click below to deliver directly to <strong className="text-white">b33022659@gmail.com</strong>:
                         </p>
                       </div>
 
-                      <div className="p-4 rounded-xl bg-[#141622] border border-[#232738] text-left space-y-2.5 max-w-md mx-auto">
+                      <div className="p-4 rounded-xl bg-[#111513] border border-[#222b26] text-left space-y-2.5 max-w-md mx-auto">
                         {lastSubmissionUrls?.gmailUrl && (
                           <a
                             href={lastSubmissionUrls.gmailUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="w-full h-10 px-4 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors duration-150"
+                            className="w-full h-10 px-4 rounded-lg bg-[#0eb37c] hover:bg-[#12c286] text-black font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
                           >
                             <Mail size={14} />
                             <span>Send via Gmail Web</span>
@@ -458,14 +388,14 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                     <button
                       type="button"
                       onClick={handleReset}
-                      className="h-10 px-4 rounded-lg bg-[#141622] hover:bg-[#1b1e2c] text-[#d4d4d8] text-xs font-medium border border-[#272b3b] transition-colors duration-150 cursor-pointer"
+                      className="h-10 px-4 rounded-lg bg-[#111513] hover:bg-[#171d19] text-[#c5d2cb] text-xs font-medium border border-[#222b26] transition-colors cursor-pointer"
                     >
                       Report Another
                     </button>
                     <button
                       type="button"
                       onClick={onClose}
-                      className="h-10 px-6 rounded-lg bg-white hover:bg-neutral-200 text-black text-xs font-semibold shadow-sm transition-colors duration-150 cursor-pointer"
+                      className="h-10 px-6 rounded-lg bg-[#0eb37c] hover:bg-[#12c286] text-black text-xs font-semibold shadow-sm transition-colors cursor-pointer"
                     >
                       Done
                     </button>
@@ -475,7 +405,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {/* Page Heading & Subtitle */}
                   <div>
-                    <h2 className="feedback-heading">
+                    <h2 className="feedback-heading font-heading">
                       Feedback & Bug Report
                     </h2>
                     <p className="feedback-subtitle mt-1.5">
@@ -484,7 +414,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                   </div>
 
                   {errorMsg && (
-                    <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
+                    <div className="p-3 rounded-lg bg-[#171d19] border border-[#ea3954] text-[#ea3954] text-xs flex items-center gap-2">
                       <AlertCircle size={15} className="shrink-0" />
                       <span>{errorMsg}</span>
                     </div>
@@ -504,10 +434,10 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                             key={cat.id}
                             type="button"
                             onClick={() => setSelectedCategory(cat.id)}
-                            className={`h-10 px-3 rounded-lg text-[13px] font-medium flex items-center justify-center gap-1.5 transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                            className={`h-10 px-3 rounded-lg text-[13px] font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                               isSelected
-                                ? 'bg-white text-black font-semibold border border-white shadow-sm'
-                                : 'bg-[#141622] text-[#a1a1aa] border border-[#25293a] hover:bg-[#1b1e2c] hover:text-white'
+                                ? 'bg-[#0eb37c] text-black font-semibold border border-[#0eb37c]'
+                                : 'bg-[#111513] text-[#95a49c] border border-[#222b26] hover:bg-[#171d19] hover:text-white'
                             }`}
                           >
                             <Icon size={14} className="shrink-0" />
@@ -518,7 +448,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Sender Name & Email (Equal Height & Aligned) */}
+                  {/* Sender Name & Email */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="feedback-label mb-1.5 block">
@@ -529,7 +459,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="e.g. Rahul Sharma"
-                        className="w-full h-11 px-3.5 rounded-lg bg-[#141622] border border-[#25293a] feedback-input-text placeholder-[#71717a] focus:outline-none focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/20 transition-all duration-150"
+                        className="w-full h-11 px-3.5 rounded-lg bg-[#111513] border border-[#222b26] feedback-input-text placeholder-[#728279] focus:outline-none focus:border-[#0eb37c] transition-colors"
                       />
                     </div>
 
@@ -542,7 +472,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your.email@example.com"
-                        className="w-full h-11 px-3.5 rounded-lg bg-[#141622] border border-[#25293a] feedback-input-text placeholder-[#71717a] focus:outline-none focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/20 transition-all duration-150"
+                        className="w-full h-11 px-3.5 rounded-lg bg-[#111513] border border-[#222b26] feedback-input-text placeholder-[#728279] focus:outline-none focus:border-[#0eb37c] transition-colors"
                       />
                     </div>
                   </div>
@@ -550,7 +480,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                   {/* Title / Summary */}
                   <div>
                     <label className="feedback-label mb-1.5 block">
-                      {currentCat.badge} Title <span className="text-rose-400">*</span>
+                      {currentCat.badge} Title <span className="text-[#ea3954]">*</span>
                     </label>
                     <input
                       type="text"
@@ -558,14 +488,14 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder={currentCat.placeholderTitle}
-                      className="w-full h-11 px-3.5 rounded-lg bg-[#141622] border border-[#25293a] feedback-input-text placeholder-[#71717a] focus:outline-none focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/20 transition-all duration-150"
+                      className="w-full h-11 px-3.5 rounded-lg bg-[#111513] border border-[#222b26] feedback-input-text placeholder-[#728279] focus:outline-none focus:border-[#0eb37c] transition-colors"
                     />
                   </div>
 
                   {/* Detailed Description */}
                   <div>
                     <label className="feedback-label mb-1.5 block">
-                      Detailed Description <span className="text-rose-400">*</span>
+                      Detailed Description <span className="text-[#ea3954]">*</span>
                     </label>
                     <textarea
                       required
@@ -573,30 +503,30 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder={currentCat.placeholderDesc}
-                      className="w-full p-3.5 rounded-lg bg-[#141622] border border-[#25293a] feedback-input-text placeholder-[#71717a] focus:outline-none focus:border-[#3b82f6] focus:ring-2 focus:ring-[#3b82f6]/20 transition-all duration-150 resize-y min-h-[110px]"
+                      className="w-full p-3.5 rounded-lg bg-[#111513] border border-[#222b26] feedback-input-text placeholder-[#728279] focus:outline-none focus:border-[#0eb37c] transition-colors resize-y min-h-[110px]"
                     />
                   </div>
 
                   {/* Attach Code Checkbox */}
                   {currentCode && (
-                    <label className="flex items-center gap-2 p-2.5 rounded-lg bg-[#141622] border border-[#232738] feedback-helper-text cursor-pointer select-none">
+                    <label className="flex items-center gap-2 p-2.5 rounded-lg bg-[#111513] border border-[#222b26] feedback-helper-text cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={attachCode}
                         onChange={(e) => setAttachCode(e.target.checked)}
-                        className="size-4 rounded border-[#373b4d] bg-[#0d0f17] text-blue-600 focus:ring-0 cursor-pointer"
+                        className="size-4 rounded border-[#222b26] bg-[#0a0d0b] text-[#0eb37c] focus:ring-0 cursor-pointer"
                       />
-                      <Code2 size={14} className="text-emerald-400 shrink-0" />
+                      <Code2 size={14} className="text-[#0eb37c] shrink-0" />
                       <span>Attach current Python code & execution step to reproduce issue</span>
                     </label>
                   )}
 
-                  {/* Submit & Secondary Action Buttons (Clear Visual Hierarchy) */}
+                  {/* Submit & Secondary Action Buttons */}
                   <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex-1 h-11 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold text-[15px] transition-all duration-150 shadow-sm cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      className="flex-1 h-11 rounded-lg bg-[#0eb37c] hover:bg-[#12c286] text-black font-semibold text-[15px] transition-colors shadow-sm cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       <span>{isSubmitting ? 'Recording & Sending...' : 'Submit & Send to Email'}</span>
                       <ArrowRight size={15} />
@@ -606,10 +536,10 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                       href={getDirectGmailUrl()}
                       target="_blank"
                       rel="noreferrer"
-                      className="h-11 px-4 rounded-lg bg-transparent hover:bg-[#1a1d2b] text-[#d4d4d8] hover:text-white font-medium text-sm flex items-center justify-center gap-1.5 border border-[#2b3042] transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      className="h-11 px-4 rounded-lg bg-[#111513] hover:bg-[#171d19] text-[#c5d2cb] hover:text-white font-medium text-sm flex items-center justify-center gap-1.5 border border-[#222b26] transition-colors cursor-pointer"
                       title="Open directly in Gmail web compose tab"
                     >
-                      <Mail size={14} className="text-rose-400" />
+                      <Mail size={14} className="text-[#0eb37c]" />
                       <span>Open in Gmail</span>
                       <ExternalLink size={12} />
                     </a>

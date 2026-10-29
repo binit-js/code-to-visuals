@@ -166,28 +166,22 @@ export const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, onSelectP
           exit={{ opacity: 0, scale: 0.94, y: 15 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-6xl my-auto rounded-3xl border border-zinc-700/80 bg-[#0d111a] shadow-[0_0_90px_rgba(16,185,129,0.25)] text-zinc-100 overflow-hidden flex flex-col"
+          className="relative w-full max-w-6xl my-auto rounded-2xl border border-[#222b26] bg-[#0a0d0b] shadow-2xl text-[#c5d2cb] overflow-hidden flex flex-col"
         >
-          {/* Ambient Lighting Accents */}
-          <div className="absolute -top-32 -left-32 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
-
           {/* Modal Header */}
-          <div className="relative z-10 flex items-center justify-between px-6 pt-5 pb-4 border-b border-zinc-800/80">
+          <div className="relative z-10 flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#222b26]">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center size-10 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 shadow-sm">
-                <Video size={20} />
-              </div>
+              <Video size={22} className="text-[#0eb37c] shrink-0" />
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-bold text-white tracking-tight">
+                  <h2 className="text-xl font-bold text-white tracking-tight font-heading">
                     Interactive Walkthrough & Demo
                   </h2>
-                  <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  <span className="text-[11px] font-mono font-medium px-2.5 py-0.5 rounded border border-[#222b26] text-[#95a49c]">
                     60 SEC GUIDE • FULLSCREEN HD
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-zinc-400">
+                <p className="text-xs sm:text-sm text-[#95a49c]">
                   Quick visual overview of writing, executing, and exploring DSA algorithms
                 </p>
               </div>
@@ -195,35 +189,31 @@ export const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, onSelectP
 
             <button
               onClick={handleClose}
-              className="p-2.5 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-all border border-zinc-700/80 shadow-md"
+              className="p-2 rounded-lg bg-[#111513] hover:bg-[#171d19] text-[#95a49c] hover:text-white transition-colors border border-[#222b26] shadow-sm cursor-pointer"
               title="Close Demo"
+              aria-label="Close"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           </div>
 
-          {/* Interactive Simulated Video Player Screen (BIG SCREEN) */}
+          {/* Interactive Simulated Video Player Screen */}
           <div className="relative z-10 p-5 sm:p-6 pb-2">
-            <div className="relative w-full rounded-2xl border border-zinc-800 bg-[#07090e] shadow-2xl overflow-hidden">
-              {/* Top Video Player Bar (Mac style window dots + chapter title) */}
-              <div className="flex items-center justify-between px-5 py-3 bg-zinc-900/90 border-b border-zinc-800 text-xs sm:text-sm">
-                <div className="flex items-center gap-2.5">
-                  <span className="size-3 rounded-full bg-red-500/80" />
-                  <span className="size-3 rounded-full bg-yellow-500/80" />
-                  <span className="size-3 rounded-full bg-emerald-500/80" />
-                  <span className="ml-2 font-mono text-zinc-300 font-medium">
-                    CodeFlow Demo Player — Chapter {currentChapter + 1} of {CHAPTERS.length}
-                  </span>
-                </div>
+            <div className="relative w-full rounded-xl border border-[#222b26] bg-[#050706] shadow-lg overflow-hidden">
+              {/* Top Video Player Bar */}
+              <div className="flex items-center justify-between px-5 py-3 bg-[#111513] border-b border-[#222b26] text-xs">
+                <span className="font-mono text-[#c5d2cb] font-medium">
+                  CodeFlow Demo Player — Chapter {currentChapter + 1} of {CHAPTERS.length}
+                </span>
 
-                <div className="flex items-center gap-2 text-zinc-400 font-mono text-xs">
-                  <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="flex items-center gap-2 text-[#95a49c] font-mono text-xs">
+                  <span className="size-2 rounded-full bg-[#0eb37c]" />
                   <span>Interactive HD Simulation</span>
                 </div>
               </div>
 
-              {/* Video Screen Content (Simulated Animated DSA Walkthrough - EXPANDED HEIGHT) */}
-              <div className="relative h-[480px] sm:h-[530px] md:h-[560px] w-full p-6 sm:p-8 flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#090d15] to-[#05070a]">
+              {/* Video Screen Content */}
+              <div className="relative h-[480px] sm:h-[530px] md:h-[560px] w-full p-6 sm:p-8 flex flex-col justify-between overflow-hidden bg-[#050706]">
                 {/* Background Subtle Grid */}
                 <div className="absolute inset-0 opacity-[0.08] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
 
@@ -356,21 +346,21 @@ export const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, onSelectP
 
                         {/* Node 10 */}
                         <div className="flex items-center gap-3">
-                          <div className="px-5 py-3.5 rounded-2xl bg-zinc-900 border-2 border-emerald-400 text-white font-mono font-bold text-base sm:text-lg shadow-[0_0_20px_rgba(16,185,129,0.35)] min-w-[75px] text-center">
-                            <span className="text-zinc-400 text-[11px] block font-sans">val</span>10
+                          <div className="px-5 py-3.5 rounded-xl bg-[#111513] border-2 border-[#0eb37c] text-white font-mono font-bold text-base sm:text-lg shadow-sm min-w-[75px] text-center">
+                            <span className="text-[#95a49c] text-[11px] block font-sans">val</span>10
                           </div>
-                          <span className="text-emerald-400 font-extrabold text-2xl">→</span>
+                          <span className="text-[#0eb37c] font-extrabold text-2xl">→</span>
                         </div>
 
                         {/* Node 20 */}
                         <div className="flex items-center gap-3">
-                          <div className="px-5 py-3.5 rounded-2xl bg-zinc-900 border-2 border-emerald-400 text-white font-mono font-bold text-base sm:text-lg shadow-[0_0_20px_rgba(16,185,129,0.35)] min-w-[75px] text-center">
-                            <span className="text-zinc-400 text-[11px] block font-sans">val</span>20
+                          <div className="px-5 py-3.5 rounded-xl bg-[#111513] border-2 border-[#0eb37c] text-white font-mono font-bold text-base sm:text-lg shadow-sm min-w-[75px] text-center">
+                            <span className="text-[#95a49c] text-[11px] block font-sans">val</span>20
                           </div>
                           <motion.span
-                            animate={{ scale: [1, 1.3, 1], color: ['#10b981', '#38bdf8', '#10b981'] }}
+                            animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 1.2, repeat: Infinity }}
-                            className="font-extrabold text-2xl sm:text-3xl"
+                            className="font-extrabold text-2xl sm:text-3xl text-[#0eb37c]"
                           >
                             →
                           </motion.span>
@@ -378,29 +368,29 @@ export const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, onSelectP
 
                         {/* Animated Inserting Node 25 */}
                         <motion.div
-                          animate={{ y: [0, -10, 0] }}
+                          animate={{ y: [0, -8, 0] }}
                           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
                           className="flex items-center gap-3"
                         >
-                          <div className="px-5 py-3.5 rounded-2xl bg-amber-950/90 border-2 border-amber-400 text-amber-200 font-mono font-bold text-base sm:text-lg shadow-[0_0_25px_rgba(251,191,36,0.4)] min-w-[85px] text-center">
-                            <span className="text-amber-400 text-[11px] block font-sans font-bold">new_node</span>25
+                          <div className="px-5 py-3.5 rounded-xl bg-[#171d19] border-2 border-[#e69500] text-amber-200 font-mono font-bold text-base sm:text-lg shadow-sm min-w-[85px] text-center">
+                            <span className="text-[#e69500] text-[11px] block font-sans font-bold">new_node</span>25
                           </div>
-                          <span className="text-amber-400 font-extrabold text-2xl">→</span>
+                          <span className="text-[#e69500] font-extrabold text-2xl">→</span>
                         </motion.div>
 
                         {/* Node 30 */}
                         <div className="flex items-center gap-3">
-                          <div className="px-5 py-3.5 rounded-2xl bg-zinc-900 border-2 border-zinc-700 text-zinc-300 font-mono font-bold text-base sm:text-lg min-w-[75px] text-center">
-                            <span className="text-zinc-500 text-[11px] block font-sans">val</span>30
+                          <div className="px-5 py-3.5 rounded-xl bg-[#111513] border-2 border-[#222b26] text-[#c5d2cb] font-mono font-bold text-base sm:text-lg min-w-[75px] text-center">
+                            <span className="text-[#728279] text-[11px] block font-sans">val</span>30
                           </div>
-                          <span className="text-zinc-500 text-base font-mono">→ None</span>
+                          <span className="text-[#728279] text-base font-mono">→ None</span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-6 text-xs sm:text-sm font-mono text-zinc-300 mt-3 bg-zinc-900/80 px-6 py-2 rounded-full border border-zinc-800 shadow-md">
-                        <span className="text-emerald-400 font-semibold">● Active Pointer Linked</span>
-                        <span className="text-amber-400 font-semibold">● Node 25 Inserted</span>
-                        <span className="text-zinc-400">● Live Memory ID #44029</span>
+                      <div className="flex items-center gap-6 text-xs sm:text-sm font-mono text-[#c5d2cb] mt-3 bg-[#111513] px-6 py-2 rounded-full border border-[#222b26] shadow-sm">
+                        <span className="text-[#0eb37c] font-semibold">● Active Pointer Linked</span>
+                        <span className="text-[#e69500] font-semibold">● Node 25 Inserted</span>
+                        <span className="text-[#95a49c]">● Live Memory ID #44029</span>
                       </div>
                     </motion.div>
                   )}
@@ -463,29 +453,29 @@ export const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, onSelectP
                         </div>
 
                         {/* Progress Bar */}
-                        <div className="w-full h-3 rounded-full bg-zinc-800 overflow-hidden mb-5">
+                        <div className="w-full h-3 rounded-full bg-[#171d19] overflow-hidden mb-5">
                           <motion.div
                             animate={{ width: ['20%', '50%', '75%'] }}
                             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                            className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400"
+                            className="h-full bg-[#0eb37c]"
                           />
                         </div>
 
                         {/* Playback Controls */}
                         <div className="flex items-center justify-center gap-3 sm:gap-4">
-                          <button className="px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:text-white text-xs sm:text-sm font-semibold">
+                          <button className="px-3.5 py-2 rounded-lg bg-[#111513] border border-[#222b26] text-[#c5d2cb] hover:text-white text-xs sm:text-sm font-medium">
                             |◀ Start
                           </button>
-                          <button className="px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:text-white text-xs sm:text-sm font-semibold">
+                          <button className="px-3.5 py-2 rounded-lg bg-[#111513] border border-[#222b26] text-[#c5d2cb] hover:text-white text-xs sm:text-sm font-medium">
                             ◀ Prev
                           </button>
-                          <button className="px-6 py-2.5 rounded-xl bg-emerald-500 text-zinc-950 font-bold text-sm flex items-center gap-2 shadow-lg">
+                          <button className="px-6 py-2.5 rounded-lg bg-[#0eb37c] text-black font-semibold text-sm flex items-center gap-2 shadow-sm">
                             <Pause size={15} fill="currentColor" /> Pause
                           </button>
-                          <button className="px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:text-white text-xs sm:text-sm font-semibold">
+                          <button className="px-3.5 py-2 rounded-lg bg-[#111513] border border-[#222b26] text-[#c5d2cb] hover:text-white text-xs sm:text-sm font-medium">
                             Next ▶
                           </button>
-                          <button className="px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:text-white text-xs sm:text-sm font-semibold">
+                          <button className="px-3.5 py-2 rounded-lg bg-[#111513] border border-[#222b26] text-[#c5d2cb] hover:text-white text-xs sm:text-sm font-medium">
                             End ▶|
                           </button>
                         </div>
@@ -556,22 +546,22 @@ export const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, onSelectP
                   <button
                     key={chap.id}
                     onClick={() => handleSelectChapter(idx)}
-                    className={`flex flex-col text-left p-2.5 rounded-xl border transition-all text-xs ${
+                    className={`flex flex-col text-left p-2.5 rounded-lg border transition-colors text-xs cursor-pointer ${
                       isActive
-                        ? 'bg-emerald-950/40 border-emerald-500/60 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
-                        : 'bg-zinc-900/50 border-zinc-800/80 hover:bg-zinc-900 hover:border-zinc-700 text-zinc-400'
+                        ? 'bg-[#171d19] border-[#0eb37c] text-white shadow-sm'
+                        : 'bg-[#111513] border-[#222b26] hover:bg-[#171d19] text-[#95a49c]'
                     }`}
                   >
                     <span
                       className={`text-[10px] font-mono font-bold ${
-                        isActive ? 'text-emerald-400' : 'text-zinc-500'
+                        isActive ? 'text-[#0eb37c]' : 'text-[#728279]'
                       }`}
                     >
                       0{idx + 1}
                     </span>
                     <span
                       className={`font-semibold line-clamp-1 mt-0.5 ${
-                        isActive ? 'text-white' : 'text-zinc-300'
+                        isActive ? 'text-white' : 'text-[#c5d2cb]'
                       }`}
                     >
                       {chap.badge.split('. ')[1] || chap.badge}
@@ -583,14 +573,14 @@ export const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, onSelectP
           </div>
 
           {/* Modal Footer with One-Time Choice & Action CTAs */}
-          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-zinc-800/80 bg-zinc-950/50 text-xs">
+          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-[#222b26] bg-[#0a0d0b] text-xs">
             {/* Don't show again checkbox */}
-            <label className="flex items-center gap-2 text-zinc-400 hover:text-zinc-200 cursor-pointer select-none">
+            <label className="flex items-center gap-2 text-[#95a49c] hover:text-[#c5d2cb] cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={dontShowAgain}
                 onChange={(e) => setDontShowAgain(e.target.checked)}
-                className="rounded border-zinc-700 bg-zinc-900 text-emerald-500 focus:ring-emerald-500/20"
+                className="rounded border-[#222b26] bg-[#111513] text-[#0eb37c] focus:ring-0"
               />
               <span>Don't show this walkthrough automatically on next visit</span>
             </label>
@@ -603,7 +593,7 @@ export const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, onSelectP
                     handleClose();
                     onSelectPreset('linked-list-insertion');
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-medium border border-zinc-700 transition-all hover:border-emerald-500/40 text-xs"
+                  className="px-3.5 py-2 rounded-lg bg-[#111513] hover:bg-[#171d19] text-[#c5d2cb] font-medium border border-[#222b26] transition-colors text-xs cursor-pointer"
                 >
                   Try Linked List Preset
                 </button>
@@ -611,7 +601,7 @@ export const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose, onSelectP
 
               <button
                 onClick={handleClose}
-                className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-zinc-950 font-bold shadow-md hover:shadow-emerald-500/30 transition-all flex items-center gap-1.5 text-xs"
+                className="px-5 py-2 rounded-lg bg-[#0eb37c] hover:bg-[#12c286] text-black font-semibold shadow-sm transition-colors flex items-center gap-1.5 text-xs cursor-pointer"
               >
                 <span>Start Exploring</span>
                 <ArrowRight size={14} />

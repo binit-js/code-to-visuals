@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-import { Terminal, AlertCircle, Play, Sparkles } from 'lucide-react';
-import { LiquidButton } from '@/components/animate-ui/buttons/liquid';
+import { Terminal, AlertCircle, Play } from 'lucide-react';
 
 interface CodeEditorProps {
   code: string;
@@ -169,20 +168,16 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           )}
 
           {onToggleOutput && (
-            <LiquidButton
+            <button
               onClick={onToggleOutput}
-              delay="0.3s"
-              fillHeight="3px"
-              tapScale={0.97}
-              className={`btn-output-liquid ${isOutputOpen ? 'active' : ''} ${
+              className={`btn-output-trigger ${isOutputOpen ? 'active' : ''} ${
                 hasOutput ? 'has-output' : ''
               }`}
               title="Toggle Output and Answer View"
             >
-              <Sparkles size={13} className="text-amber-400" />
               <span>{isOutputOpen ? 'Hide Answer' : 'Output & Answer'}</span>
               {hasOutput && <span className="output-status-dot" />}
-            </LiquidButton>
+            </button>
           )}
         </div>
 
